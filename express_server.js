@@ -8,19 +8,25 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
+//homepage
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-//add additional endpoints JSON
+//get data in JSON format, /urls.json
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//get an HTML response
+//get data in HTML, /hello
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+//route handler for /urls
+app.get("/urls", (req, res) => {
+   const templateVars = { urls: urlDatabase };
+  res.render('pages/urls_index', templateVars);
 });
 
 app.listen(PORT, () => {
