@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/chchchelsay/tinyapp/issues"
   },
-  "homepage": "https://github.com/chchchelsay/tinyapp#readme"
+  "homepage": "https://github.com/chchchelsay/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
