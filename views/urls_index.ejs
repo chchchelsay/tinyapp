@@ -17,10 +17,14 @@
     <title>TinyApp</title>
   </head>
   <body>
+    <header>
+      <%- include('./partials/_header'); %>
+    </header>
+    
     <main style="margin: 1em;">
+      <a href="#">Shorten New URL</a>
       <h3>My URLs</h3>
       <h3><% urls %></h3>
-      <a href="#">shorten a new URL</a>
       <table class="table">
         <thead>
           <tr>
