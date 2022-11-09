@@ -33,7 +33,7 @@ app.get("/urls", (req, res) => {
 //route path: /urls/:id
 //request URL: http://localhost:8080/urls/b2xVn2
 app.get("/urls/:id", (req, res) => {
-  const templateVars = {id: "b2xVn2", longURL: "http://www.lighthouselabs.ca"};
+  const templateVars = {id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render('urls_show', templateVars);
 });
 
