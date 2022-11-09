@@ -1,10 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; //default port
-
 app.set("view engine", "ejs");
 
-function generateRandomString() {
+const generateRandomString = function () {
   let result = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let charactersLength = characters.length;
@@ -12,9 +11,9 @@ function generateRandomString() {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-}
-
+};
 console.log(generateRandomString());
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -59,9 +58,17 @@ app.get("/urls/:id", (req, res) => {
 //match POST request handler
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
-});
+  const shortURL = generateRandomString();
+      urlDatabase[shortURL] = (req.body.longURL);
+      console.log(urlDatabase);
+      res.redirect(`/urls/${shortURL}`);
+  });
+  
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+console.log(urlDatabase);
+  
+
