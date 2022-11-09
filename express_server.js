@@ -74,6 +74,12 @@ app.post("/urls", (req, res) => {
       console.log(urlDatabase);
   });
   
+  //****DELETE BUTTON REDIRECTS BACK TO /URLS*/
+  app.post("/urls/:id/delete", (req, res) => { 
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls');
+  });
+  
 //LISTENER
 app.listen(PORT, () => {
   console.log(`Tiny Url app listening on port ${PORT}!`);
