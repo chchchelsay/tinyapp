@@ -82,13 +82,9 @@ app.post("/urls", (req, res) => {
 
 //****EDIT BUTTON REDIRECTS BACK TO /URLS */
 app.post("/urls/:id/update", (req, res) => {
-  console.log('before' + urlDatabase[req.params.id]);
   urlDatabase[req.params.id] = (req.body.longURL) 
-  console.log('after' + urlDatabase[req.params.id]);
     res.redirect('/urls');
-  
-  //console.log("URL Updated");
-});
+  });
   
 //LISTENER
 app.listen(PORT, () => {
