@@ -27,6 +27,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//******USERS OBJECT******//
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
 
 //****************************GET REQUESTS****************************//
 
@@ -79,13 +92,28 @@ app.get("/register", (req, res) => {
 
 //******/CREATES SHORT URL FOR A LONG ONE, REDIRECTS******//
 app.post("/urls", (req, res) => {
-  //console.log(req.body); 
   const shortURL = generateRandomString();
       urlDatabase[shortURL] = (req.body.longURL);
+      //console.log(shortURL);
+      //console.log(req.body.longURL);
       res.redirect(`/urls/${shortURL}`);
-//log updated urlDatabase obj      
-      console.log(urlDatabase);
+      //console.log(urlDatabase);
   });
+
+app.post("/register", (req, res) => { 
+  const userID = generateRandomString();
+  const userEmail = req.body.email;
+  const userPass = req.body.password;
+  
+  users[userID] = {};
+  users[userID]["id"] = userID;
+  users[userID]["email"] = userEmail;
+  users[userID]["password"] = userPass;
+  console.log(users);
+  res.cookie('newUser', users[userID]);
+    res.redirect('/urls');
+  });
+
   
   //****DELETE BUTTON REDIRECTS BACK TO /URLS*/
   app.post("/urls/:id/delete", (req, res) => { 
