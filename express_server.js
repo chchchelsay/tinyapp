@@ -3,7 +3,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser')
 const app = express();
 app.use(cookieParser());
-const PORT = 7777; //default port
+const PORT = 8080; //default port
 app.set("view engine", "ejs");
 
 //******CONVERTS POST REQUEST INTO READABLE STRING******//
