@@ -1,6 +1,7 @@
 //******SETUP******//
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const e = require("express");
 const app = express();
 app.use(cookieParser());
 const PORT = 8080; //default port
@@ -19,6 +20,16 @@ const generateRandomString = function() {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+};
+
+//****finding a user in user object from their email****/
+const findUserByEmail = function(userEmail, users) {
+  for (let i of Object.keys(users)) {
+    if (users[i].email === userEmail) {
+      return users[i];
+    }  
+  }
+  return null;
 };
 
 //******DATABASE OBJECT******//
@@ -122,15 +133,25 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const userEmail = req.body.email;
   const userPass = req.body.password;
+  const emailExists = findUserByEmail(userEmail, users);
 
   const templateVars = {
     user: users[userID]
   };
-  //push new user elements to users object
+//if email or password are empty strings, send 400 response
+  if (userEmail === "" || userPass === "") {
+    return res.status(400).send ('400 Error! This field cannot be blank.');
+  }
+//if email already exists, send 400 response
+  if (emailExists) {
+    return res.status(400).send ('400 Error! This email is already taken.');
+//push new user elements to users object
+  } else {
   users[userID] = {};
   users[userID]["id"] = userID;
   users[userID]["email"] = userEmail;
   users[userID]["password"] = userPass;
+  };
   res.cookie('user_id', userID);
   res.redirect('/urls');
 });
