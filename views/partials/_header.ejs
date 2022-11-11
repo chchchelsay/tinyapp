@@ -19,19 +19,21 @@
       </div>
     </div>
 
-    <form method="POST" action="/login">
-      <div class="form-group form-inline justify-content-start">
-    <input type="text" placeholder="Username" name="uname" required>
-<button type="submit">Login</button>
-    </form>
+    <% if(!username){ %>
+      <form method="POST" action="/login">
+        <div class="form-group form-inline justify-content-start">
+      <input type="text" placeholder="Username" name="username" required>
+  <button type="submit">Submit</button>
+      </form>
 
+    <% } else if (username) { %>  
+      Logged in as: <%= username %>
+      <form align="right" name="form1" method="post" action="/logout">
+        <label class="logoutLblPos">
+        <input name="submit2" type="submit" id="submit2" value="Logout">
+        </label>
+      </form>
+      <% } %>
 
-  
-  
-  
-  
-  
-  
-  
   </nav>
 </header>

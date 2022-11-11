@@ -1,7 +1,9 @@
 //******SETUP******//
 const express = require("express");
+const cookieParser = require('cookie-parser')
 const app = express();
-const PORT = 8080; //default port
+app.use(cookieParser());
+const PORT = 7777; //default port
 app.set("view engine", "ejs");
 
 //******CONVERTS POST REQUEST INTO READABLE STRING******//
@@ -42,7 +44,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-   const templateVars = { urls: urlDatabase };
+   const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"] 
+  };
   res.render('urls_index', templateVars);
 });
 
@@ -86,6 +91,18 @@ app.post("/urls/:id/update", (req, res) => {
     res.redirect('/urls');
   });
   
+//*****LOGIN USERNAME CREATE COOKIE*******/
+app.post("/login", (req, res) => {
+res.cookie('username', req.body.username);
+  res.redirect('/urls');
+});
+
+//*****LOGOUT USERNAME CLEAR COOKIE*******/
+app.post("/logout", (req, res) => {
+  res.clearCookie('username', req.body);
+    res.redirect('/urls');
+  });
+
 //LISTENER
 app.listen(PORT, () => {
   console.log(`Tiny Url app listening on port ${PORT}!`);
