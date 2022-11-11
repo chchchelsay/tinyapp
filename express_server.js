@@ -57,7 +57,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = {id: req.params.id, longURL: urlDatabase[req.params.id]};
+  const templateVars = {
+    id: req.params.id, 
+    longURL: urlDatabase[req.params.id]
+  };
   res.render('urls_show', templateVars);
 });
 
@@ -65,6 +68,11 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
+});
+
+//*******PROMPTS REGISTER WITH EMAIL PASSWORD */
+app.get("/register", (req, res) => {
+  res.render('urls_register');
 });
 
 //****************************POST REQUESTS****************************//
@@ -91,13 +99,13 @@ app.post("/urls/:id/update", (req, res) => {
     res.redirect('/urls');
   });
   
-//*****LOGIN USERNAME CREATE COOKIE*******/
+//*****LOGIN WITH USERNAME, CREATE COOKIE*******/
 app.post("/login", (req, res) => {
 res.cookie('username', req.body.username);
   res.redirect('/urls');
 });
 
-//*****LOGOUT USERNAME CLEAR COOKIE*******/
+//*****LOGOUT & CLEAR COOKIE*******/
 app.post("/logout", (req, res) => {
   res.clearCookie('username', req.body);
     res.redirect('/urls');
