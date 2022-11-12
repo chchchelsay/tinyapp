@@ -117,6 +117,14 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]]
+  };
+  //res.redirect("/urls");
+  res.render("urls_login", templateVars)
+});
+
 //*****POST REQUESTS****************************//
 
 //******/CREATES SHORT URL FOR A LONG ONE, REDIRECTS******//
@@ -171,6 +179,13 @@ app.post("/urls/:id/update", (req, res) => {
   
 //*****LOGIN WITH USERNAME, CREATE COOKIE*******/
 app.post("/login", (req, res) => {
+  let userID;
+  const userEmail = req.body.email;
+  const userPass = req.body.password;
+  const user = findUserByEmail(userEmail, users);
+  const templateVars = {
+    user: users[userID]
+  };
   res.cookie('username', req.body.username);
   res.redirect('/urls');
 });
@@ -187,3 +202,4 @@ app.listen(PORT, () => {
 });
 
   
+
