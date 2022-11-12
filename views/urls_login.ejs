@@ -20,35 +20,36 @@
 
     <title>Login - TinyApp Example</title>
   </head>
+  <%- include('partials/_header') %>
 
   <body 
-  <%- include('partials/_header') %>
-        <main style="margin: 1em">
-    <div class="d-flex justify-content-center mt-lg-5">
-
-      <form 
-        class="form-group" 
+  class="text-center">
+        <main>
+          <br>
+          <h2 style="color:#1B5734";>Login</h2>
+      <form  
         action="/login" 
-        method="POST">
-        <h2 style="color:#1B5734";>Login</h2>
-
+        method="POST"
+        class="form-group"> <br>
       <input
             type="email"
             name="email"
-            class="form-control"
             id="email"
-            placeholder="Enter email address" required>        
+            placeholder="Enter email address" required> 
+            <br>    
     <input
-            type="password"
-            name="password"
-            class="form-control"
-            id="password"
-            placeholder="Enter password" required> <br>
-            <button 
-            class="mt-1 btn btn-lg btn-success" 
-            type=""submit">Login</button>          
+    type="password"
+    name="password"
+    id="password"
+    placeholder="Enter password" required> 
+    <br><br>
+    
+    <button 
+        class="mt-1 btn btn-lg btn-success" 
+        type=""submit">Login</button>          
       </form>
     </main>
+
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
