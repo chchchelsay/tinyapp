@@ -81,10 +81,18 @@ app.get("/urls", (req, res) => {
 
 //******/urls/new shows form to shorten and submit a new URL******//
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
-  };
+  const userID = req.cookies["user_id"];
+  
+  if (!userID) {
+    res.redirect("/login");
+
+  } else {
+    const templateVars = {
+      user: users[userID]
+    };
+
   res.render("urls_new", templateVars);
+  }
 });
 
 
@@ -137,9 +145,16 @@ app.get("/login", (req, res) => {
 
 //******/CREATES SHORT URL FOR A LONG ONE, REDIRECTS******//
 app.post("/urls", (req, res) => {
+  const userID = req.cookies["user_id"];
+
+  if (userID) {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = (req.body.longURL);
   res.redirect(`/urls/${shortURL}`);
+
+  } else {
+    res.status(401).send ('401 Error! You must be logged in to proceed.');
+  }
 });
 
 app.post("/register", (req, res) => {
