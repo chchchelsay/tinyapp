@@ -1,8 +1,10 @@
 //******SETUP******//
 const express = require("express");
 const cookieParser = require('cookie-parser');
+
 const app = express();
 app.use(cookieParser());
+
 const PORT = 8080; //default port
 app.set("view engine", "ejs");
 
@@ -53,11 +55,6 @@ const users = {
 
 //*****GET REQUESTS****************************//
 
-//******homepage******//
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
 //******JSON******//
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -66,6 +63,11 @@ app.get("/urls.json", (req, res) => {
 //******/hello in html******//
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+//******homepage******//
+app.get("/", (req, res) => {
+  res.redirect("/urls");
 });
 
 //******/urls shows list of saved shortened URLS******//
@@ -80,7 +82,6 @@ app.get("/urls", (req, res) => {
 //******/urls/new shows form to shorten and submit a new URL******//
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    urls: urlDatabase,
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
@@ -91,29 +92,26 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
+    user: users[req.cookies["user_id"]],
+    longURL: urlDatabase[req.params.id],
   };
   res.render('urls_show', templateVars);
-});
-
-
-//*******/register prompts user to sign up with an email and password*/
-app.get("/register", (req, res) => {
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id],
-    urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
-  };
-  res.render('urls_register', templateVars);
 });
 
 //******/u/:id redirects short URL to its represented long url address******//
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
+});
+
+
+//*******/register prompts user to sign up with an email and password*/
+app.get("/register", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]]
+  };
+  res.render('urls_register', templateVars);
 });
 
 app.get("/login", (req, res) => {
@@ -130,10 +128,7 @@ app.get("/login", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = (req.body.longURL);
-  //console.log(shortURL);
-  //console.log(req.body.longURL);
   res.redirect(`/urls/${shortURL}`);
-  //console.log(urlDatabase);
 });
 
 app.post("/register", (req, res) => {
@@ -159,6 +154,7 @@ app.post("/register", (req, res) => {
   users[userID]["email"] = userEmail;
   users[userID]["password"] = userPass;
   };
+  
   res.cookie('user_id', userID);
   res.redirect('/urls');
 });
@@ -176,23 +172,26 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect('/urls');
 });
   
-//*****LOGIN WITH USERNAME, CREATE COOKIE*******/
+//*****LOGIN, CREATE COOKIE*******/
 app.post("/login", (req, res) => {
-  let userID;
   const userEmail = req.body.email;
   const userPass = req.body.password;
   const user = findUserByEmail(userEmail, users);
-  const templateVars = {
-    user: users[userID]
-  };
-  res.cookie('username', req.body.username);
+  
+  if (!user) {
+    return res.status(403).send(`403 code error ${userEmail} cannot be found.`);
+  }
+  if (user.password !== userPass) {
+    return res.status(403).send("Incorrect password.");
+  }
+  res.cookie('user_id', userEmail);
   res.redirect('/urls');
 });
 
 //*****LOGOUT & CLEAR COOKIE*******/
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body);
-  res.redirect('/urls');
+  res.clearCookie('user_id');
+  res.redirect('/login');
 });
 
 //LISTENER
