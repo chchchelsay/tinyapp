@@ -108,17 +108,28 @@ app.get("/u/:id", (req, res) => {
 
 //*******/register prompts user to sign up with an email and password*/
 app.get("/register", (req, res) => {
+const userID = req.cookies["user_id"];
+
   const templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: users[userID]
   };
+
+  if (userID) {
+    res.redirect('/urls');
+  }
   res.render('urls_register', templateVars);
 });
 
 app.get("/login", (req, res) => {
+  const userID = req.cookies["user_id"];
+
   const templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: users[userID]
   };
-  //res.redirect("/urls");
+
+  if (userID) {
+    res.redirect('/urls');
+  }
   res.render("urls_login", templateVars)
 });
 
