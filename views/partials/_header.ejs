@@ -19,22 +19,30 @@
       </div>
     </div>
 
-    <% if(!user){ %>
-      <form class="form-inline">
-        <div class="ml-auto text-light navbar-nav">
-        <a class="nav-item nav-link active" href="/login">Login</a>
-      </form>
-      <form>
-        <a class="nav-item nav-link active" href="/register">Register</a>
-      </form>
+    <% if(user){ %>
+      <class="d-flex flex-column flex-md-row mb-2 mb-md-0 ml-md-auto justify-content-start text-light d-flex align-items-start align-items-md-center">
+        <div class="pb-3 pb-md-0">Logged in as: 
+        <%= user.email %> 
+        </div>
 
-    <% } else if (user) { %>  
-      Logged in as: <%= user.email %>
-      <form method="POST" action="/logout">
-        <button name="logout" type="submit" class="btn btn-sm btn-outline-light ml-md-3" >Logout</button>
+        <form 
+        method="POST" 
+        action="/logout">
+        <button 
+        name="logout" 
+        type="submit" 
+        class="btn btn-sm btn-outline-light ml-md-3" >Logout
+      </button>
         </form>
-      <% } %>
 
+    <% } else { %>
+ 
+      <class="form-inline">
+      <div class="ml-auto text-light navbar-nav">
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+      <% } %>
+</div>
 
   </nav>
 </header>
