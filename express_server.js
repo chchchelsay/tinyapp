@@ -109,8 +109,15 @@ app.get("/urls/:id", (req, res) => {
 
 //******/u/:id redirects short URL to its represented long url address******//
 app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
   const longURL = urlDatabase[req.params.id];
+
+if (!urlDatabase[shortURL]) {
+  res.status(403).send ('Error! Tiny URL does not exist...yet.');
+}
+else {
   res.redirect(longURL);
+}  
 });
 
 
