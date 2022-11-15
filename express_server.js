@@ -1,16 +1,17 @@
 //******SETUP******//
 const express = require("express");
-const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
-
-const app = express();
-app.use(cookieParser());
+const cookieSession = require('cookie-session');
 
 const PORT = 8080; //default port
-app.set("view engine", "ejs");
 
-//******CONVERTS POST REQUEST INTO READABLE STRING******//
+const app = express();
+app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieSession({
+  session: 'session',
+  keys: ['key1', 'key2']
+}));
 
 
 //******RANDOM ID FOR SHORT URLS ******//
@@ -34,8 +35,21 @@ const findUserByEmail = function(userEmail, users) {
   return null;
 };
 
-
-//******DATABASE OBJECT******//
+//URLS FOR USER - returns urls where userID = id of logged in user
+const urlsForUser = (id, urlDatabase) => {
+  const userURL = {};
+  
+    for (const shortURL in urlDatabase) {
+      if (urlDatabase[shortURL].userID === id) {
+        userURL[shortURL] = urlDatabase[shortURL];
+      }
+    return userURL;
+    }
+  };
+  
+  
+  
+  //******DATABASE OBJECT******//
 const urlDatabase = {
   "b2xVn2": {
       longURL: "http://www.lighthouselabs.ca",
@@ -47,17 +61,7 @@ const urlDatabase = {
     }
 };
 
-//URLS FOR USER - returns urls where userID = id of logged in user
-const urlsForUser = (id, urlDatabase) => {
-const userURL = {};
 
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) {
-      userURL[shortURL] = urlDatabase[shortURL];
-    }
-  return userURL;
-  }
-};
 
 
 //******USERS OBJECT******//
@@ -78,9 +82,8 @@ const users = {
 
 //******homepage******//
 app.get("/", (req, res) => {
-  const userID = req.cookies["user_id"];
-
-  if (userID) {
+  
+  if (req.session.user_id) {
     res.redirect("/urls");
   }
   res.redirect("/login");
@@ -98,15 +101,13 @@ app.get("/urls.json", (req, res) => {
 
 //******/urls shows list of saved shortened URLS******//
 app.get("/urls", (req, res) => {
-const userID = req.cookies["user_id"];
-console.log(userID);
-if (!userID) {
+if (!req.session.user_id) {
   res.send(`<html><body><p><a href="/login">Please login first!</a></p></html>`);
 }
 
 const templateVars = {
-  urls: urlsForUser(userID, urlDatabase),
-  user: users[userID]
+  urls: urlsForUser(req.session.user_id, urlDatabase),
+  user: users[req.session.user_id]
 };
   res.render('urls_index', templateVars);
 });
@@ -116,15 +117,14 @@ const templateVars = {
 
 //******/urls/new shows form to shorten and submit a new URL******//
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies["user_id"];
   
   //cannot create a new one if not logged in
-  if (!userID) {
+  if (!req.session.user_id) {
     res.send(`<html><body><p><a href="/login">Please login first!</a></p></html>`);
   
   }
     const templateVars = {
-      user: users[userID]
+      user: users[req.session.user_id]
     };
 
     res.render("urls_new", templateVars);
@@ -137,9 +137,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
-  const userID = req.cookies["user_id"];
   
-  if (!userID) {
+  if (!req.session.user_id) {
     res.send(`<html><body><p><a href="/login">Please login first!</a></p></html>`);
   }
   if (!urlDatabase[shortURL]) {
@@ -154,10 +153,9 @@ app.get("/u/:id", (req, res) => {
 
 //******/urls:id shows the longURL, short version, allows you to update short version******//
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies["user_id"];
   
   //if not logged in
-  if (!userID) {
+  if (!req.session.user_id) {
     res.send(`<html><body><p><a href="/login">Please login first!</a></p></html>`);
   }
   //if tiny saved url doesn't exist
@@ -165,13 +163,13 @@ app.get("/urls/:id", (req, res) => {
     res.status(403).send ('Error! Tiny URL does not exist...yet.');
   }   
 //cannot access if it's not your saved URL
-  if (urlDatabase[req.params.id].userID !== userID) {
+  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     res.status(401).send(`Error! Cannot access ${req.params.id}`);
   }
 
   const templateVars = {
     id: req.params.id,
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     longURL: urlDatabase[req.params.id].longURL,
   };
   res.render('urls_show', templateVars);
@@ -182,13 +180,12 @@ app.get("/urls/:id", (req, res) => {
 
 //*******/register prompts user to sign up with an email and password*/
 app.get("/register", (req, res) => {
-const userID = req.cookies["user_id"];
 
-if (userID) {
+if (req.session.user_id) {
   res.redirect('/urls');
 }
   const templateVars = {
-  user: users[userID]
+  user: users[req.session.user_id]
   };
   res.render('urls_register', templateVars);
 });
@@ -197,14 +194,13 @@ if (userID) {
 
 
 app.get("/login", (req, res) => {
-  const userID = req.cookies["user_id"];
-
-  if (userID) {
+  
+  if (req.session.user_id) {
     res.redirect('/urls');
   }
 
   const templateVars = {
-    user: users[userID]
+    user: users[req.session.user_id]
   };
   res.render("urls_login", templateVars)
 });
@@ -217,13 +213,13 @@ app.get("/login", (req, res) => {
 //******/CREATES SHORT URL FOR A LONG ONE, REDIRECTS******//
 app.post("/urls", (req, res) => {
   
-  if (!req.cookies["user_id"]) {
+  if (!req.session.user_id) {
     return res.status(401).send ('401 Error! You must be logged in to proceed.');
   }
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {
     longURL: (req.body.longURL),
-    userID: req.cookies["user_id"]
+    userID: req.session.user_id
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -253,21 +249,21 @@ users[userID]["id"] = userID;
 users[userID]["email"] = userEmail;
 users[userID]["password"] = hashPass;
 
-  res.cookie('user_id', userID);
+req.session.user_id = userID;
   res.redirect('/urls');
 });
 
   
 //****DELETE BUTTON REDIRECTS BACK TO /URLS*/
 app.post("/urls/:id/delete", (req, res) => {
-const userID = req.cookies["user_id"];
 
 //cannot delete a URL if not logged in//can't delete someone else's
-  if (!userID) {
-    return res.status(403).send("Error 1");
+  if (!req.session.user_id) {
+    res.status(403).send("Error 1");
   }
-  if (urlDatabase[req.params.id].userID !== req.cookies["user_id"]) {
+  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     res.status(403).send("Error 2");
+
   delete urlDatabase[req.params.id]
   res.redirect('/urls');
   }
@@ -277,9 +273,8 @@ const userID = req.cookies["user_id"];
 
 //****EDIT BUTTON REDIRECTS BACK TO /URLS */
 app.post("/urls/:id/update", (req, res) => {
-const userID = req.cookies["user_id"];
 
-  if ((!userID) || (urlDatabase[req.params.id].userID !== userID)) {
+  if ((!req.session.user_id) || (urlDatabase[req.params.id].userID !== req.session.user_id)) {
     return res.status(403).send("Error! You do not have access to edit this URL");
   }
    urlDatabase[req.params.id].longURL = (req.body.longURL);
@@ -299,13 +294,13 @@ app.post("/login", (req, res) => {
     return res.status(403).send('ERROR: Incorrect password!');
   }
 
-  res.cookie('user_id', userEmail);
+  req.session.user_id = user.id;
   res.redirect('/urls');
 });
 
 //*****LOGOUT & CLEAR COOKIE*******/
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect('/login');
 });
 
