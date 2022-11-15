@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon -L express_server.js",
-    "test": "./node_modules/mocha/bin/mocha"
+    "start": "nodemon -L express_server.js",
+    "test": "./node_modules/mocha/bin/_mocha"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,9 @@
     "chai": "^4.3.7",
     "mocha": "^10.1.0",
     "nodemon": "^2.0.20"
+  },
+  "directories": {
+    "test": "test"
   },
   "description": ""
 }
