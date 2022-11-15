@@ -1,6 +1,7 @@
 //******SETUP******//
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 
 const app = express();
 app.use(cookieParser());
@@ -234,6 +235,7 @@ app.post("/register", (req, res) => {
   const userEmail = req.body.email;
   const userPass = req.body.password;
   const emailExists = findUserByEmail(userEmail, users);
+  const hashPass = bcrypt.hashSync(userPass, 10);
 
 
 //if email or password are empty strings, send 400 response
@@ -244,15 +246,14 @@ if (userEmail === "" || userPass === "") {
 if (emailExists) {
   return res.status(400).send ('400 Error! This email is already taken.');
 //push new user elements to users object
-} else {
+} 
+
 users[userID] = {};
 users[userID]["id"] = userID;
 users[userID]["email"] = userEmail;
-users[userID]["password"] = userPass;
-};
+users[userID]["password"] = hashPass;
 
   res.cookie('user_id', userID);
-  console.log(res.cookie);
   res.redirect('/urls');
 });
 
@@ -292,11 +293,12 @@ app.post("/login", (req, res) => {
   const user = findUserByEmail(userEmail, users);
   
   if (!user) {
-    return res.status(403).send(`403 code error ${userEmail} cannot be found.`);
+    return res.status(403).send(`ERROR: ${userEmail} cannot be found.`);
   }
-  if (user.password !== userPass) {
-    return res.status(403).send("Incorrect password.");
+  if (bcrypt.compareSync(user.password, userPass)) {
+    return res.status(403).send('ERROR: Incorrect password!');
   }
+
   res.cookie('user_id', userEmail);
   res.redirect('/urls');
 });
