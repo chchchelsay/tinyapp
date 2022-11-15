@@ -100,9 +100,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
-    urls: urlDatabase,
     user: users[req.cookies["user_id"]],
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
   };
   res.render('urls_show', templateVars);
 });
@@ -154,15 +153,17 @@ app.get("/login", (req, res) => {
 app.post("/urls", (req, res) => {
   const userID = req.cookies["user_id"];
 
-  if (userID) {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = (req.body.longURL);
-  res.redirect(`/urls/${shortURL}`);
-
-  } else {
-    res.status(401).send ('401 Error! You must be logged in to proceed.');
+  if (!userID) {
+    return res.status(401).send ('401 Error! You must be logged in to proceed.');
   }
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = {
+    longURL: (req.body.longURL)
+  };
+  res.redirect(`/urls/${shortURL}`);
 });
+
+
 
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
