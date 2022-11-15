@@ -3,8 +3,13 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const cookieSession = require('cookie-session');
 
-const PORT = 8080; //default port
+const {
+  getUserByEmail,
+  generateRandomString,
+  urlsForUser
+} = require('./helpers')
 
+const PORT = 8080; //default port
 const app = express();
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -13,41 +18,6 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
-
-//******RANDOM ID FOR SHORT URLS ******//
-const generateRandomString = function() {
-  let result = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let charactersLength = characters.length;
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-};
-
-//****finding a user in user object from their email****/
-const findUserByEmail = function(userEmail, users) {
-  for (let i of Object.keys(users)) {
-    if (users[i].email === userEmail) {
-      return users[i];
-    }  
-  }
-  return null;
-};
-
-//URLS FOR USER - returns urls where userID = id of logged in user
-const urlsForUser = (id, urlDatabase) => {
-  const userURL = {};
-  
-    for (const shortURL in urlDatabase) {
-      if (urlDatabase[shortURL].userID === id) {
-        userURL[shortURL] = urlDatabase[shortURL];
-      }
-    return userURL;
-    }
-  };
-  
-  
   
   //******DATABASE OBJECT******//
 const urlDatabase = {
@@ -230,7 +200,7 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const userEmail = req.body.email;
   const userPass = req.body.password;
-  const emailExists = findUserByEmail(userEmail, users);
+  const emailExists = getUserByEmail(userEmail, users);
   const hashPass = bcrypt.hashSync(userPass, 10);
 
 
@@ -285,7 +255,7 @@ app.post("/urls/:id/update", (req, res) => {
 app.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const userPass = req.body.password;
-  const user = findUserByEmail(userEmail, users);
+  const user = getUserByEmail(userEmail, users);
   
   if (!user) {
     return res.status(403).send(`ERROR: ${userEmail} cannot be found.`);
