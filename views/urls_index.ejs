@@ -33,17 +33,24 @@
           </tr>
         </thead>
         <tbody>
+
+
           <% for (let id in urls) { %>
             <tr>
               <td><%= id %></td>
               <td><%= urls[id].longURL %></td>
               <td>
-                <form method="GET" action="/urls/<%= id %>">
-                  <button class="btn btn-outline-primary">Edit</button>
+                <form
+                method="GET" 
+                action="/urls/<%= id %>/update">
+                  <button
+                  class="btn btn-outline-primary">Edit</button>
                 </form>
               </td>
               <td>
-                <form method="POST" action="/urls/<%= id %>/delete">      
+                <form 
+                method="POST" 
+                action="/urls/<%= id %>/delete">      
                 <button class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>
@@ -52,6 +59,10 @@
         </tbody>
       </table>
     </main>
+
+
+
+
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

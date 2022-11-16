@@ -28,8 +28,8 @@ const urlsForUser = (id, urlDatabase) => {
       if (urlDatabase[shortURL].userID === id) {
         userURL[shortURL] = urlDatabase[shortURL];
       }
-    return userURL;
     }
+    return userURL;
   };
   
   module.exports = {

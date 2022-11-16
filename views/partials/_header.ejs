@@ -19,29 +19,20 @@
       </div>
     </div>
 
-    <% if(user){ %>
-      <class="d-flex flex-column flex-md-row mb-2 mb-md-0 ml-md-auto justify-content-start text-light d-flex align-items-start align-items-md-center">
-        <div class="pb-3 pb-md-0">Logged in as: 
-        <%= user.email %> 
-        </div>
-
-        <form 
-        method="POST" 
-        action="/logout">
-        <button 
-        name="logout" 
-        type="submit" 
-        class="btn btn-sm btn-outline-light ml-md-3" >Logout
-      </button>
+    <div class="float-right my-auto d-flex flex-row ">
+      <% if (!user) { %>
+        <form  action="/register" method="GET">
+          <button type="submit" class="btn btn-sm btn-outline-light ml-md-3" style="margin-right: 1em;" >Register</button>
+      </form>
+      <form  action="/login" method="GET">
+        <button type="submit" class="btn btn-sm btn-outline-light ml-md-3">Login</button>
+    </form>        
+      <% } else{ %>
+        <form class="form-inline" action="/logout" method="POST">
+          <h5 style="margin-right: 1em;">Logged in as: <%= user['email'] %></h5>
+          <button type="submit" class="btn btn-sm btn-outline-light ml-md-3" >Logout</button>
         </form>
-
-    <% } else { %>
- 
-      <class="form-inline">
-      <div class="ml-auto text-light navbar-nav">
-        <a class="nav-item nav-link" href="/login">Login</a>
-        <a class="nav-item nav-link" href="/register">Register</a>
-      <% } %>
+        <% } %>
 </div>
 
   </nav>
