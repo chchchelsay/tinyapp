@@ -6,8 +6,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 !["Register Page"](https://github.com/chchchelsay/tinyapp/blob/master/docs/register.png?raw=true)
 !["Login Page"](https://github.com/chchchelsay/tinyapp/blob/master/docs/login.png?raw=true)
-!["Add a New URL"](https://github.com/chchchelsay/tinyapp/blob/master/docs/new-url.png?raw=true)
 !["My URLS Page"](https://github.com/chchchelsay/tinyapp/blob/master/docs/myurls.png?raw=true)
+!["Add a New URL"](https://github.com/chchchelsay/tinyapp/blob/master/docs/new-url.png?raw=true)
 !["Editing a URL"](https://github.com/chchchelsay/tinyapp/blob/master/docs/edit.png?raw=true)
 !["View Updated URLs Page"](https://github.com/chchchelsay/tinyapp/blob/master/docs/edit-added.png?raw=true)
 
@@ -28,3 +28,4 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Testing
 
 - Use mocha & chai to test helper functions
+- Use nodemon to view live site updates (run in terminal with npm start command)
