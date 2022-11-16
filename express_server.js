@@ -196,7 +196,7 @@ app.post("/register", (req, res) => {
   const userPass = req.body.password;
   const emailExists = getUserByEmail(userEmail, users);
   const hashPass = bcrypt.hashSync(userPass, 10);
-
+console.log(hashPass);
 
 //if email or password are empty strings, send 400 response
   if (userEmail === "" || userPass === "") {
@@ -211,7 +211,7 @@ users[userID] = {};
 users[userID]["id"] = userID;
 users[userID]["email"] = userEmail;
 users[userID]["password"] = hashPass;
-
+console.log(users);
 req.session.user_id = users[userID].id;
 res.redirect('/urls');
 });
@@ -225,17 +225,17 @@ app.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const userPass = req.body.password;
   const user = getUserByEmail(userEmail, users);
-  
+  console.log(userEmail, userPass, user, bcrypt.compareSync(userPass, user.password));
   if (!userEmail || !userPass) {
     res.status(403).send("ERROR: Valid email and password required!");
   }
   if (!user) {
     res.status(403).send(`ERROR: ${userEmail} cannot be found.`);
   }
-  if (!bcrypt.compareSync(user.password, userPass)) {
+  if (!bcrypt.compareSync(userPass, user.password)) {
     res.status(403).send('ERROR: Incorrect password!');
   }  
-  if (bcrypt.compareSync(user.password, userPass)) {
+  if (bcrypt.compareSync(userPass, user.password)) {
     req.session.user_id = user.id;
     res.redirect('/urls');
   }
