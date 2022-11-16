@@ -112,7 +112,7 @@ app.get("/u/:id", (req, res) => {
 
 
 //******/urls:id shows the longURL, short version, allows you to update short version******//
-app.get("/urls/:id", (req, res) => {
+app.get("/urls/:id/update", (req, res) => {
   
   const templateVars = {
     id: req.params.id,
