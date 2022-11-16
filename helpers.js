@@ -31,7 +31,7 @@ const urlsForUser = (id, urlDatabase) => {
     }
     return userURL;
   };
-  
+
   module.exports = {
     generateRandomString,
     getUserByEmail,
